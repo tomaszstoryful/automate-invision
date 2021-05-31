@@ -18,8 +18,8 @@ options.add_experimental_option('prefs', prefs)
 
 ChromeDriverManager
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-# timeout after 50 seconds
-wait  = WebDriverWait(driver, 50)
+# timeout after 20 seconds
+wait  = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 driver.set_window_position(0, 0)
 driver.set_window_size(2000, 1200)
@@ -56,9 +56,9 @@ try:
         downloadable = download.is_enabled()
         if downloadable:
             ##images zip
-            #downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[3]/div/button')))
+            downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[3]/div/button')))
             ##HTML
-            downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[2]/div/button')))
+            # downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[2]/div/button')))
             ##PDF
             # downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[1]/div/button')))
             downloadOption.click()

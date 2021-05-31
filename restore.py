@@ -19,8 +19,8 @@ options.add_experimental_option('prefs', prefs)
 
 ChromeDriverManager
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-# timeout after 50 seconds
-wait  = WebDriverWait(driver, 50)
+# timeout after 20 seconds
+wait  = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 driver.set_window_position(0, 0)
 driver.set_window_size(2000, 1200)
