@@ -118,7 +118,7 @@ try:
             archiveProject(i)
 
 
-    # Set the upper bound to at least twice as many as the estimated total counts of the projects.
+    # Set the upper bound to at least twice as many as the estimated total count of the projects.
     for i in range(1, 240):
         project = lambda: wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(1)+']/div/div/article/a')))
         projectLink = project()

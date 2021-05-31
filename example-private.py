@@ -9,7 +9,7 @@ org = ''
 space = ''
 
 # Path to your designated download directory with a trailing slash (required by the export, list jobs)
-# e.g. '/Users/minghuasun/Downloads/invision/'
+# e.g. '/Users/[user]/Downloads/invision/'
 downloadDir = ''
 
 # This is a stringified array of all the projects (required by the list job)
