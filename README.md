@@ -59,7 +59,7 @@ and uncomment the HTML download option in `export.py`
 ### Notes
 Because the InvisionApp is built with React with asynchronous loading - the projects load and unload as the page scrolls, there's no straight-forward way to get the total count of the projects, nor the total length of the page content as new content loads automatically when the scroll bar reaches the bottom (aka infinite scroll). Using selenium to simulate page scrolls in order to get to the entire list of projects keeps having issues of web element staleness. This  makes it particularly hard if you have to scroll down multiple times to keep making manual exports (infinite scroll controversy in terms of usability and accessibility - see this [nngroup article](https://www.nngroup.com/articles/infinite-scrolling))
 
-In `export.py` and `restore.py`, you should set an upper bound of the for loop range based on the estimated count of your prototypes in the space. This is what I did to count them using JS in the browser console:
+In `export.py` and `restore.py`, you should set an upper bound of the for loop range based on the estimated count of your prototypes in the space. Don't worry if you overshoot or undershoot for the estimation - if you overshoot, the script will throw an timeout exception once all prototypes are exported or restored; or if you undershoot, you can always run it again and it will pick up from where it left off. To get an accurate estimation, this is what I did to count them using JS in the browser console:
 
 ```
 
@@ -82,7 +82,7 @@ function scroll() {
 }
 
 // estimated scrolls
-totalScrolls = 10
+totalScrolls = 20
 for (i = 1; i < (totalScrolls + 1); i++) {
   //window.scroll(356 * 3 *(i-1));
   getProjects()
