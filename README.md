@@ -55,7 +55,41 @@ and uncomment the HTML download option in `export.py`
 - $ `pipenv run python3 list.py` - If you have a reference list of all the project names, this can help you check what are missing in your download directory from that list.
 - $ `pipenv run python3 cleanup.py` - This helps you clean up duplicated downloads of the same files in a specified local directory
 
+### Notes
+Because the InvisionApp is built with React with asynchronous loading - the projects load and unload as the page scrolls, there's no straight-forward way to get the total count of the projects, nor the total length of the page content as new content loads automatically when the scroll bar reaches the bottom (aka infinite scroll). Using selenium to simulate page scrolls in order to get to the entire list of projects keeps having issues of web element staleness. This  makes it particularly hard if you have to scroll down multiple times to keep making manual exports (infinite scroll controversy in terms of usability and accessibility - see this [nngroup article](https://www.nngroup.com/articles/infinite-scrolling))
 
+In `export.py` and `restore.py`, you should set an upper bound of the for loop range based on the estimated count of your prototypes in the space. This is what I did to count them using JS in the browser console:
+
+```
+
+let list =[]
+function getProjects() {
+    const p = document.querySelectorAll('div[class^="grid__grid__"] > div > div')
+    p.forEach((e, i) => {
+  	const name = e.innerText.split('\n')[0]
+  	console.log(i, name)
+  	list.push(name)
+    })
+    return p
+}
+
+function scroll() {
+  const projects = getProjects()
+  const p = projects[projects.length -1]
+  console.log('!!! scroll to: '+ p.innerText.split('\n')[0])
+  p.scrollIntoView()
+}
+
+// estimated scrolls
+totalScrolls = 10
+for (i = 1; i < (totalScrolls + 1); i++) {
+  //window.scroll(356 * 3 *(i-1));
+  getProjects()
+  scroll()
+}
+
+console.log(list)
+```
 
 ## License
 [MIT](./LICENSE)
