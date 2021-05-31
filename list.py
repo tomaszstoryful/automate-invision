@@ -1,6 +1,7 @@
 import json
 import downloads
 import private
+import re
 
 downloadDir = private.downloadDir
 
@@ -9,7 +10,7 @@ list = json.loads(private.listStr)
 fileListAll = []
 fileNameListAll = []
 for file in list:
-    fileName = file.split('.zip')[0]
+    fileName = file.split('.zip|.html|.pdf')[0]
     file = ''.join(filter(str.isalpha, fileName))
     fileListAll.append(file)
     fileNameListAll.append(fileName)
