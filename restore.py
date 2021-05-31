@@ -61,7 +61,7 @@ def restoreProject(i):
     confirmButton.click()
 
 
-for i in range(1, 100):
+for i in range(1, 120):
     project = lambda: wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(1)+']/div/div/article/a')))
     projectLink = project()
     driver.execute_script("arguments[0].focus()", projectLink)
