@@ -100,21 +100,21 @@ try:
 
     exportedProjects = []
 
-    def checkProject(i):
+    def checkProject(i, index):
         projectName = getProjectName(i)
         isPrototype = getProjectType(i) == 'prototype'
         # only export the projects that has been exported
         projectNameClean = ''.join(filter(str.isalpha, projectName))
         projectList = downloads.getFileList(private.downloadDir)
         if projectNameClean in projectList or projectName in exportedProjects:
-            print(str(i) +': '+ projectName + ' has already been saved.')
+            print(str(index) +': '+ projectName + ' has already been saved.')
             archiveProject(i)
         elif isPrototype:
             exportProject(i)
             exportedProjects.append(projectName)
-            print(str(i) +': '+ projectName)
+            print(str(index) +': '+ projectName)
         else:
-            print(str(i) +': '+ projectName + ' skipping not prototype')
+            print(str(index) +': '+ projectName + ' skipping not prototype')
             archiveProject(i)
 
 
@@ -124,7 +124,7 @@ try:
         projectLink = project()
         driver.execute_script("arguments[0].focus()", projectLink)
         time.sleep(1)
-        checkProject(1)
+        checkProject(1, i)
         driver.get(driver.current_url)
         time.sleep(2)
         driver.refresh()

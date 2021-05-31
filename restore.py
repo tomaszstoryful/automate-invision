@@ -52,8 +52,8 @@ try:
         projectName = project.get_attribute('data-title')
         return projectName
 
-    def restoreProject(i):
-        print('restoring: '+getProjectName(i))
+    def restoreProject(i, index):
+        print('restoring '+str(index)+': '+getProjectName(i))
         projectMore = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(i)+']/div/div/article/a')))
         projectMore.click()
         time.sleep(1)
@@ -66,7 +66,7 @@ try:
         projectLink = project()
         driver.execute_script("arguments[0].focus()", projectLink)
         time.sleep(1)
-        restoreProject(1)
+        restoreProject(1, i)
         time.sleep(1)
         driver.back()
         time.sleep(1)
