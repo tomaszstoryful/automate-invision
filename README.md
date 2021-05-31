@@ -31,7 +31,8 @@ $ `pipenv run python3 export.py` - Start exporting all the prototypes from the s
 
 #### Restoring from archives
 $ `pipenv run python3 restore.py` - Restore archived projects one-by-one from a space
-![export-invision-bot-restore](https://i.imgur.com/D20wM1P.gif)
+![export-invision-bot-restore](/assets/export-invision-bot-restore.gif)
+
 
 #### Exporting multiple formats
 There are 3 export options for Invision prototypes. You can specify one format each time you run `export.py`. Uncomment the option that you choose in `export.py`, e.g. To export as offline prototype (HTML):
