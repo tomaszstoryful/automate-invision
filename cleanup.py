@@ -4,7 +4,7 @@ import re
 import private
 
 dir_path = private.downloadDir
-list_of_files = [os.path.basename(x) for x in glob.glob(dir_path+'*')]
+list_of_files = [os.path.basename(x) for x in glob.glob(dir_path+'/*')]
 
 for file_name in list_of_files:
     match = re.match("^(.*)\s\([\d]+\)(\..*)$", file_name)
