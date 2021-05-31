@@ -1,6 +1,6 @@
 # Automate Invision Exports
 
-InvisionApp doesn't allow bulk exporting of prototypes or restoring them from archives. This means that you would have to export them one-by-one! These scripts will help you automate the tedious manual jobs in case you have lots of prototypes.
+InvisionApp doesn't allow bulk exporting of prototypes or restoring them from archives. This means that you would have to export or restore them one-by-one! These scripts will help you automate the tedious manual jobs in case you have lots of prototypes.
 ![example-export](https://i.imgur.com/cs2Q4WJ.png)
 
 ## Instructions
