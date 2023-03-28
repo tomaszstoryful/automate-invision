@@ -3,17 +3,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-import downloads
 import private
+import os
+import shutil
 
-URL = 'https://'+private.org+'.invisionapp.com/spaces/'+private.space
+URL = 'https://projects.invisionapp.com/d/main#/projects'
 
 options = webdriver.ChromeOptions()
-prefs = {'download.default_directory' : private.downloadDir}
+
+base_dir = private.downloadDir + "/Invision"
+if os.path.exists(base_dir):
+    shutil.rmtree(base_dir)
+os.makedirs(base_dir)
+
+prefs = {'download.default_directory' : base_dir}
 options.add_experimental_option('prefs', prefs)
 
 ChromeDriverManager
@@ -24,118 +30,92 @@ actions = ActionChains(driver)
 driver.set_window_position(0, 0)
 driver.set_window_size(2000, 1200)
 
+# Move file from base download dir to selected dir
+def move_png_file(currentdir, movedir):
+    source = os.path.join(currentdir)
+    sort = os.path.join(movedir)
+    for f in os.listdir(source):
+        if f.endswith((".png",".jpg",".jpeg")):
+            shutil.move(os.path.join(source, f), sort)
+
 try:
     driver.get(URL)
-    emailField = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="signin_email"]')))
-    pwField = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="signin_password"]')))
+    emailField = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="emailAddress"]')))
+    pwField = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="password"]')))
     emailField.send_keys(private.username)
     pwField.send_keys(private.pw)
-    submitButton = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:auth-ui"]/div/div/div[1]/div/div/form/div[3]/button')))
+    submitButton = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@class="main-panel__content"]/form/div[3]/button')))
     submitButton.click()
 
-    sort = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[3]/div/div/div/div[2]/div/span')))
-    sort.click()
-    sortAZ = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[3]/div/div/div/div[2]/div/div/div/ul/li[4]/div/div')))
-    sortAZ.click()
+    time.sleep(10)
+    
+    # Get Last Page value
+    last_page_value = driver.find_element(By.XPATH, "//*[@class='projects-pagination at-start']/li[10]/span")
+    last_page_value = int(last_page_value.text)
 
-    windowHomeName = driver.execute_script("return document.getElementsByTagName('title')[0].text")
-    print('window name: '+windowHomeName)
+    # Get current page value
+    current_page_value = driver.find_element(By.XPATH, "//*[@class='current']/span")
+    current_page_value = int(current_page_value.text)
 
+    page_urls = {}
 
-
-    def exportProject(i):
-        project = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(i)+']/div/div/article/a')))
-        projectURL = project.get_attribute('href')
-        projectName = project.get_attribute('aria-label')
-        driver.get(projectURL)
-        more = lambda: wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/span/button')))
-        more().click()
-        export = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/button')))
-        export.click()
-        download = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[3]/div/button')))
-        downloadable = download.is_enabled()
-        if downloadable:
-            ##images zip
-            downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[3]/div/button')))
-            ##HTML
-            # downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[2]/div/button')))
-            ##PDF
-            # downloadOption = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:prototype-overview"]/div/div/div[1]/div/div[1]/div/section/div[2]/div[1]/div/div/div/ul/li[5]/div/ul/li[1]/div/button')))
-            downloadOption.click()
-            #downloadHTML.click()
-            print("downloaded project_"+str(i) +': '+ projectName)
-        else:
-            print("Not downloadable project_"+str(i) +': '+ projectName)
-
-        time.sleep(2)
-        driver.back()
-        time.sleep(2)
-        # switch_to_window to the intial window or switch_to default content both didn't work as the current window is not actually active. This fixed the issue
-        driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.TAB)
-
-
-
-    def getProject(i):
-        project =  wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(i)+']/div')))
-        return project
-
-    def getProjectName(i):
-        project = getProject(i)
-        projectName = project.get_attribute('data-title')
-        return projectName
-
-    def archiveProject(i):
-        projectMore = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(i)+']/div/div/article/div/div[2]')))
-        projectMore.click()
-        archiveButton = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(i)+']/div/div/article/div/div[2]/div/div/ul/li[4]/div/button')))
-        archiveButton.click()
+    # Gather Prototype URL's 
+    for current_page_index in range(1, last_page_value+1):
         time.sleep(1)
-        confirmButton = driver.find_element_by_xpath('//button[text()="Archive"]')
-        confirmButton.click()
+        prototype_view_btn = driver.find_elements(By.XPATH, "//*[@class='tile-container']/div[@class='projects__project__wrapper projects__project__wrapper--prototype']")
+        prototype_view_btn = prototype_view_btn[0].find_elements(By.XPATH, "//*[contains(text(), 'View prototype')]")
+        page_urls[current_page_index] = {}
+        # Append urls
+        for current_prototype_tile_index in range(0, len(prototype_view_btn)):
+            page_urls[current_page_index][prototype_view_btn[current_prototype_tile_index].get_attribute('href')] = {}
 
-    def getProjectType(i):
-        project = getProject(i)
-        projectType = project.get_attribute('data-type')
-        return projectType
-
-    exportedProjects = []
-
-    def checkProject(i, index):
-        projectName = getProjectName(i)
-        isPrototype = getProjectType(i) == 'prototype'
-        # only export the projects that has been exported
-        projectNameClean = ''.join(filter(str.isalpha, projectName))
-        projectList = downloads.getFileList(private.downloadDir)
-        if projectNameClean in projectList or projectName in exportedProjects:
-            print(str(index) +': '+ projectName + ' has already been saved.')
-            archiveProject(i)
-        elif isPrototype:
-            exportProject(i)
-            exportedProjects.append(projectName)
-            print(str(index) +': '+ projectName)
-        else:
-            print(str(index) +': '+ projectName + ' skipping not prototype')
-            archiveProject(i)
-
-
-    # Set the upper bound to at least twice as many as the estimated total count of the projects.
-    for i in range(1, 240):
-        project = lambda: wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="app-shell:feature-root:home"]/div/section/div[4]/div[4]/div/div/div/div[1]/div/div/div['+str(1)+']/div/div/article/a')))
-        projectLink = project()
-        driver.execute_script("arguments[0].focus()", projectLink)
         time.sleep(1)
-        checkProject(1, i)
-        driver.get(driver.current_url)
-        time.sleep(2)
-        driver.refresh()
+        if current_page_index < last_page_value:
+            next_page_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@class='projects-pagination at-start']/li[@class='next']"))) if current_page_index < 2 else wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@class='projects-pagination']/li[@class='next']")))
+            next_page_button.click()
 
-    print(len(exportedProjects))
-    print(exportedProjects)
-    print("good bye!")
+    print("Gathered Prototypes")
+
+    # Gather PNG Preview Links 
+    for current_page_index in range(1, last_page_value+1):
+        time.sleep(1)
+        for key, value in page_urls[current_page_index].items():
+            driver.get(key)
+            time.sleep(1)
+            prev_buttons = []
+            preview_buttons = driver.find_elements(By.XPATH, "//*[@class='view-screen-wrap']/a")
+            if len(preview_buttons) > 0:
+                for prev_index in range(0, len(preview_buttons)):
+                    prev_buttons.append(preview_buttons[prev_index].get_attribute("href"))
+            prototype_name = driver.find_element(By.XPATH, "//*[@class='project-name']/h2")
+            page_urls[current_page_index][key]["images"] = prev_buttons
+            page_urls[current_page_index][key]["name"] = prototype_name.text
+        
+    print("PNG preview links gathered")
+    
+    # Download prototype images
+    for current_page_index in range(1, last_page_value+1):
+        # Count the total divs on page
+        time.sleep(1)
+        
+        for key, value in page_urls[current_page_index].items():
+            new_dir_name = """/{s}""".format(s=value['name'])
+            current_download_dir = base_dir + new_dir_name
+            if not os.path.exists(current_download_dir):
+                os.makedirs(current_download_dir)
+            for image_url in value['images']:
+                # Start
+                driver.get(image_url);
+                time.sleep(1)
+                download_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@class='list-item download-screen']/a")))
+                download_button.click()
+                time.sleep(1)
+                move_png_file(base_dir, current_download_dir)
+            print("Folder finished downloading =", new_dir_name)
+
+    print("Finished downloading files!")
     driver.close()
 
 except TimeoutException as ex:
-    print(len(exportedProjects))
-    print(exportedProjects)
     print("Exception has been thrown." + str(ex))
     driver.close()
